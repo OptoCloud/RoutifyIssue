@@ -1,5 +1,5 @@
 <div>
-    This should display, but doesnt
+    Test?
 </div>
 
 <script lang="ts">

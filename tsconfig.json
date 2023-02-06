@@ -2,15 +2,16 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
 
   "compilerOptions": {
-    "target": "es6",
-    "module": "esnext",
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+
+    "module": "ESNext",
+    "resolveJsonModule": true,
 
     "strict": true,
     "noEmit": true,
     "allowJs": false,
     "sourceMap": false,
-    "moduleResolution": "nodenext",
-    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
 
     "noUnusedLocals": true,
@@ -19,6 +20,6 @@
     "noFallthroughCasesInSwitch": false
   },
 
-  "include": ["src/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.svelte"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

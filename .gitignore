@@ -17,4 +17,5 @@ yarn-error.log*
 
 # build artifacts
 /.routify
-/public/build/
+/dist
+stats.html
