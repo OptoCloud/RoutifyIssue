@@ -1,12 +1,20 @@
 import { defineConfig, type PluginOption } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import routify from '@roxi/routify/vite-plugin';
-import { visualizer } from 'rollup-plugin-visualizer';
+import { resolve } from 'path';
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
   clearScreen: false,
 
-  plugins: [routify(), svelte(), visualizer() as PluginOption],
+  plugins: [routify(), svelte()],
+  build: {
+    outDir: 'dist',
+    target: 'esnext',
+    sourcemap: !isProduction,
+    emptyOutDir: true,
+  },
 
   server: { port: 1337 },
 });
