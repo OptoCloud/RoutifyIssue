@@ -24,18 +24,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.13.0
+      - name: Make directory for build files
+        shell: bash
+        run: mkdir dist
       
-      - name: Install dependencies
+      - name: Create bogus file
         shell: bash
-        run: npm ci
-
-      - name: Build
-        shell: bash
-        run: npm run build
+        run: echo "This is a bogus file" > dist/bogus.txt
 
       # Get tag to use, create it if it doesn't exist, create changelog, create release, upload artifacts (dist/** and README.md), and notify discord
       - name: Git Version
@@ -57,7 +52,7 @@ jobs:
         if: steps.version.outputs.tag == ''
         shell: bash
         run: |
-          tar -czvf release-${{ steps.version.outputs.version }}.tar.gz -C dist
+          tar -czvf release-${{ steps.version.outputs.version }}.tar.gz -C dist/*
           sudo apt install zip -y
           cd dist
           zip -r ../release-${{ steps.version.outputs.version }}.zip .
