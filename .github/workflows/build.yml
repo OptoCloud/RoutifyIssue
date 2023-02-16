@@ -3,6 +3,12 @@ name: Build
 on:
   workflow_dispatch:
 
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+
 permissions:
   contents: read
 
@@ -41,6 +47,15 @@ jobs:
         shell: bash
         run: git tag ${{ steps.version.outputs.version }}
       
+      - name: Compress action step
+        uses: a7ul/tar-action@v1.1.0
+        id: compress
+        with:
+          command: c
+          cwd: ./dist
+          files: ./*
+          outPath: yolo.tar.gz
+      
       - name: Create changelog
         if: steps.version.outputs.tag == ''
         shell: bash
@@ -52,7 +67,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/**
+            dist/yolo.tar.gz
             README.md
           name: ${{ steps.version.outputs.version }}
           tag_name: ${{ steps.version.outputs.version }}
@@ -60,19 +75,3 @@ jobs:
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Upload build artifacts
-        if: steps.version.outputs.tag == ''
-        uses: actions/upload-artifact@v2
-        with:
-          name: dist
-          path: dist
-          retention-days: 1
-      
-      - name: Upload README.md
-        if: steps.version.outputs.tag == ''
-        uses: actions/upload-artifact@v2
-        with:
-          name: README.md
-          path: README.md
-          retention-days: 1
