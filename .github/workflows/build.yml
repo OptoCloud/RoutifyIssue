@@ -52,8 +52,7 @@ jobs:
         id: compress
         with:
           command: c
-          cwd: ./dist
-          files: ./*
+          files: ./dist/*
           outPath: yolo.tar.gz
       
       - name: Create changelog
