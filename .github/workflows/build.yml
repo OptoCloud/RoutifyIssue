@@ -32,42 +32,43 @@ jobs:
         shell: bash
         run: echo "This is a bogus file" > dist/bogus.txt
 
-      # Get tag to use, create it if it doesn't exist, create changelog, create release, upload artifacts (dist/** and README.md), and notify discord
       - name: Git Version
         id: version
         uses: codacy/git-version@2.7.1
+      
+      - name: Set version variables
+        run: |
+          echo "VERSION=${{ steps.version.outputs.version }}" >> $GITHUB_ENV
+          echo "PREVIOUS_VERSION=${{ steps.version.outputs.previous_version }}" >> $GITHUB_ENV
 
       - name: Create tag
-        if: steps.version.outputs.tag == ''
         shell: bash
-        run: git tag ${{ steps.version.outputs.version }}
+        run: git tag $VERSION
       
       - name: Create changelog
-        if: steps.version.outputs.tag == ''
         shell: bash
         run: |
-          git log --pretty=format:"%s" --reverse ${{ steps.version.outputs.previous_version }}..${{ steps.version.outputs.version }} > CHANGELOG.md
+          git log --pretty=format:"%s" --reverse $PREVIOUS_VERSION..$VERSION > CHANGELOG.md
       
       - name: Compress build files
-        if: steps.version.outputs.tag == ''
         shell: bash
         run: |
           sudo apt install zip -y
           cd dist
-          tar -czvf ../release-${{ steps.version.outputs.version }}.tar.gz *
-          zip -r ../release-${{ steps.version.outputs.version }}.zip *
+          tar -czvf ../release-$VERSION.tar.gz *
+          zip -r ../release-$VERSION.zip *
       
       - name: Create release
-        if: steps.version.outputs.tag == ''
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            release-${{ steps.version.outputs.version }}.tar.gz
-            release-${{ steps.version.outputs.version }}.zip
+            release-$VERSION.tar.gz
+            release-$VERSION.zip
+            CHANGELOG.md
             README.md
-          name: ${{ steps.version.outputs.version }}
-          tag_name: ${{ steps.version.outputs.version }}
+          name: $VERSION
+          tag_name: $VERSION
           body_path: CHANGELOG.md
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: 
