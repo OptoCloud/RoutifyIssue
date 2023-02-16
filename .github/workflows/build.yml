@@ -57,9 +57,9 @@ jobs:
         if: steps.version.outputs.tag == ''
         shell: bash
         run: |
+          tar -czvf release-${{ steps.version.outputs.version }}.tar.gz -C ./dist
           sudo apt install zip -y
           cd dist
-          tar -czvf ../release-${{ steps.version.outputs.version }}.tar.gz .
           zip -r ../release-${{ steps.version.outputs.version }}.zip .
       
       - name: Create release
