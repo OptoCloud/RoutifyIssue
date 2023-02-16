@@ -24,36 +24,36 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Make directory for build files
-        shell: bash
-        run: mkdir dist
-      
-      - name: Create bogus file
-        shell: bash
-        run: echo "This is a bogus file" > dist/bogus.txt
+      - name: Build Changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v3.6.0
 
       - name: Get version
         id: version
         uses: codacy/git-version@2.7.1
       
-      - name: Set version
+      - name: Set environment variables
         shell: bash
         run: |
-          echo "VERSION=v${{ steps.version.outputs.version }}" >> $GITHUB_ENV
+          echo "VERSION=${{ steps.version.outputs.version }}" >> $GITHUB_ENV
           echo "ARCHIVE_NAME=release-${{ steps.version.outputs.version }}" >> $GITHUB_ENV
+
+      - name: Initialize
+        shell: bash
+        run: mkdir dist
       
-      - name: Compress build files
+      - name: Build
+        shell: bash
+        run: echo "This is a bogus file" > dist/bogus.txt
+
+      - name: Compress build artifacts
         shell: bash
         run: |
           sudo apt install zip -y
           cd dist
           tar -czvf ../${{ env.ARCHIVE_NAME }}.tar.gz *
           zip -r ../${{ env.ARCHIVE_NAME }}.zip *
-      
-      - name: Build Changelog
-        id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v3.6.0
-        
+       
       - name: Create tag
         shell: bash
         run: git tag ${{ env.VERSION }}
