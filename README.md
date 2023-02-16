@@ -2,4 +2,5 @@
 
 This is just for me to mess around with
 
-![cat](https://media.tenor.com/01J2Aa0rhSYAAAAC/cat-dance-dance.gif)
+![cat](img/cat-1.gif)
+![cat](img/cat-2.gif)
