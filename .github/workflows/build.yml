@@ -47,14 +47,6 @@ jobs:
         shell: bash
         run: git tag ${{ steps.version.outputs.version }}
       
-      - name: Compress action step
-        uses: a7ul/tar-action@v1.1.0
-        id: compress
-        with:
-          command: c
-          files: ./dist/*
-          outPath: yolo.tar.gz
-      
       - name: Create changelog
         if: steps.version.outputs.tag == ''
         shell: bash
@@ -66,7 +58,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/yolo.tar.gz
+            dist/*
             README.md
           name: ${{ steps.version.outputs.version }}
           tag_name: ${{ steps.version.outputs.version }}
