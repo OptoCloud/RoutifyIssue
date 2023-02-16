@@ -52,10 +52,14 @@ jobs:
         if: steps.version.outputs.tag == ''
         shell: bash
         run: |
+          echo "tar -czvf release-${{ steps.version.outputs.version }}.tar.gz -C dist/*"
           tar -czvf release-${{ steps.version.outputs.version }}.tar.gz -C dist/*
+          echo "sudo apt install zip -y"
           sudo apt install zip -y
+          echo "cd dist"
           cd dist
-          zip -r ../release-${{ steps.version.outputs.version }}.zip .
+          echo "zip -r release-${{ steps.version.outputs.version }}.zip *"
+          zip -r release-${{ steps.version.outputs.version }}.zip *
       
       - name: Create release
         if: steps.version.outputs.tag == ''
