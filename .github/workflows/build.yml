@@ -53,12 +53,21 @@ jobs:
         run: |
           git log --pretty=format:"%s" --reverse ${{ steps.version.outputs.previous_version }}..${{ steps.version.outputs.version }} > CHANGELOG.md
       
+      - name: Compress build files
+        if: steps.version.outputs.tag == ''
+        shell: bash
+        run: |
+          sudo apt install zip -y
+          tar -czvf release-${{ steps.version.outputs.version }}.tar.gz dist
+          zip -r release-${{ steps.version.outputs.version }}.zip dist
+      
       - name: Create release
         if: steps.version.outputs.tag == ''
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/*
+            release-${{ steps.version.outputs.version }}.tar.gz
+            release-${{ steps.version.outputs.version }}.zip
             README.md
           name: ${{ steps.version.outputs.version }}
           tag_name: ${{ steps.version.outputs.version }}
