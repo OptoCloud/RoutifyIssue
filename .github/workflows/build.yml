@@ -2,8 +2,6 @@ name: Build
 
 on:
   workflow_dispatch:
-    branches:
-      - master
 
 permissions:
   contents: read
@@ -33,24 +31,61 @@ jobs:
         shell: bash
         run: npm run build
 
+      # Get tag to use, create it if it doesn't exist, create changelog, create release, upload artifacts (dist/** and README.md), and notify discord
       - name: Git Version
         id: version
         uses: codacy/git-version@2.7.1
-      
-      - name: Use the version
-        run: |
-          echo ${{ steps.version.outputs.version }}
-      - name: Use the previous version
-        run: |
-          echo ${{ steps.version.outputs.previous-version }}
-        
-      - name: Generate Changelog
-        run: echo "# Good things have arrived" > ${{ github.workspace }}-CHANGELOG.txt
 
-      - name: Release
+      - name: Create tag
+        if: steps.version.outputs.tag == ''
+        shell: bash
+        run: git tag ${{ steps.version.outputs.version }}
+      
+      - name: Create changelog
+        if: steps.version.outputs.tag == ''
+        shell: bash
+        run: |
+          git config --global user.email "
+          git config --global user.name "GitHub Actions"
+          git log --pretty=format:"%s" --reverse ${{ steps.version.outputs.previous_version }}..${{ steps.version.outputs.version }} > CHANGELOG.md
+          git add CHANGELOG.md
+          git commit -m "chore: update changelog"
+          git push
+      
+      - name: Create release
+        if: steps.version.outputs.tag == ''
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
             dist/**
             README.md
+          name: ${{ steps.version.outputs.version }}
+          tag_name: ${{ steps.version.outputs.version }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload build artifacts
+        if: steps.version.outputs.tag == ''
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+      
+      - name: Upload README.md
+        if: steps.version.outputs.tag == ''
+        uses: actions/upload-artifact@v2
+        with:
+          name: README.md
+          path: README.md
+          retention-days: 1
+      
+      - name: Notify Discord
+        if: steps.version.outputs.tag == ''
+        uses: Ilshidur/action-discord@v3
+        with:
+          args: "New release ${{ steps.version.outputs.version }} is available! Check it out Actions"
+
+      
