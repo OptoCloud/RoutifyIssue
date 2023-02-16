@@ -58,8 +58,8 @@ jobs:
         shell: bash
         run: |
           sudo apt install zip -y
-          tar -czvf release-${{ steps.version.outputs.version }}.tar.gz dist/
-          zip -r release-${{ steps.version.outputs.version }}.zip dist/
+          tar -czvf release-${{ steps.version.outputs.version }}.tar.gz dist/*
+          zip -r release-${{ steps.version.outputs.version }}.zip dist/*
       
       - name: Create release
         if: steps.version.outputs.tag == ''
