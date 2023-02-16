@@ -36,34 +36,36 @@ jobs:
         id: version
         uses: codacy/git-version@2.7.1
       
+      - name: Set version
+        shell: bash
+        run: |
+          echo "VERSION=v${{ steps.version.outputs.version }}" >> $GITHUB_ENV
+          echo "ARCHIVE_NAME=release-${{ steps.version.outputs.version }}" >> $GITHUB_ENV
+      
       - name: Compress build files
         shell: bash
         run: |
           sudo apt install zip -y
           cd dist
-          tar -czvf ../release-${{ steps.version.outputs.version }}.tar.gz *
-          zip -r ../release-${{ steps.version.outputs.version }}.zip *
-
-      - name: Create tag ${{ steps.version.outputs.version }}
+          tar -czvf ../${{ env.ARCHIVE_NAME }}.tar.gz *
+          zip -r ../${{ env.ARCHIVE_NAME }}.zip *
+        
+      - name: Create tag
         shell: bash
-        run: git tag ${{ steps.version.outputs.version }}
+        run: git tag ${{ env.VERSION }}
       
       - name: Build Changelog
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v3.6.0
       
-      - name: Create CHANGELOG.md
-        shell: bash
-        run: echo "${{ steps.build_changelog.outputs.changelog }}" > CHANGELOG.md
-      
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            release-${{ steps.version.outputs.version }}.tar.gz
-            release-${{ steps.version.outputs.version }}.zip
-          name: ${{ steps.version.outputs.version }}
-          tag_name: ${{ steps.version.outputs.version }}
+            ${{ env.ARCHIVE_NAME }}.tar.gz
+            ${{ env.ARCHIVE_NAME }}.zip
+          name: ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
           body: ${{ steps.build_changelog.outputs.changelog }}
           draft: false
           prerelease: true
