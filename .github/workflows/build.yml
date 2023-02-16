@@ -2,9 +2,18 @@ name: Build
 
 on:
   workflow_dispatch:
+    branches:
+      - master
+
+permissions:
+  contents: read
 
 jobs:
   build:
+    permissions:
+      contents: write
+      pull-requests: write
+    
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +32,7 @@ jobs:
       - name: Build
         shell: bash
         run: npm run build
+
+      - uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
