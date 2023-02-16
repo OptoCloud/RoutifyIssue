@@ -45,12 +45,7 @@ jobs:
         if: steps.version.outputs.tag == ''
         shell: bash
         run: |
-          git config --global user.email "
-          git config --global user.name "GitHub Actions"
           git log --pretty=format:"%s" --reverse ${{ steps.version.outputs.previous_version }}..${{ steps.version.outputs.version }} > CHANGELOG.md
-          git add CHANGELOG.md
-          git commit -m "chore: update changelog"
-          git push
       
       - name: Create release
         if: steps.version.outputs.tag == ''
