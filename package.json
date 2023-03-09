@@ -1,38 +1,28 @@
 {
   "name": "optocloud",
-  "private": true,
   "version": "0.0.1",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "clean": "run-p -l clean:*",
-    "clean:svelte": "rimraf .routify dist",
-    "build": "run-s -l clean build:svelte",
-    "build:svelte": "vite build",
+    "dev": "vite dev",
+    "clean": "rimraf .svelte-kit",
+    "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
-    "@roxi/routify": "^3.0.0-next.1",
-    "@sveltejs/vite-plugin-svelte": "^2.0.2",
+    "@sveltejs/adapter-auto": "^2.0.0",
+    "@sveltejs/adapter-cloudflare": "^2.2.0",
+    "@sveltejs/kit": "^1.10.0",
     "@tsconfig/svelte": "^3.0.0",
-    "npm-run-all": "^4.1.5",
-    "rimraf": "^4.1.2",
+    "rimraf": "^4.3.1",
     "svelte": "^3.55.1",
-    "svelte-check": "^3.0.3",
+    "svelte-check": "^3.1.0",
     "tslib": "^2.5.0",
     "typescript": "^4.9.5",
-    "vite": "^4.1.1"
+    "vite": "^4.1.4"
   },
-  "browserslist": {
-    "production": [
-      "> 0.5%",
-      "not dead",
-      "not op_mini all",
-      "supports es6-module"
-    ],
-    "development": [
-      "last 1 version"
-    ]
+  "volta": {
+    "node": "19.7.0"
   }
 }

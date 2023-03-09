@@ -1,0 +1,43 @@
+name: Build
+description: Sets up and builds the project
+
+runs:
+  using: 'composite'
+  steps:
+    #####################
+    # Node installation #
+    #####################
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.13.0
+    
+    ############################
+    # Install npm dependencies #
+    ############################
+    - name: Restore cached npm dependencies # Restore cached
+      id: cache-npm-restore
+      uses: actions/cache/restore@v3
+      with:
+        path: |
+          ~/.npm
+          node_modules
+        key: npm-${{ hashFiles('package-lock.json') }}
+    - name: Install dependencies # Install
+      shell: bash
+      run: npm install
+    - name: Cache npm dependencies # Cache npm dependencies
+      id: cache-npm-save
+      uses: actions/cache/save@v3
+      with:
+        path: |
+          ~/.npm
+          node_modules
+        key: npm-${{ hashFiles('package-lock.json') }}
+
+    ################
+    # Build svelte #
+    ################
+    - name: Build svelte
+      shell: bash
+      run: npm run build
